@@ -1,0 +1,24 @@
+From 86f1c2001ea388b228df30b0c1dbcd4b2e818ddc Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jari=20H=C3=A4m=C3=A4l=C3=A4inen?= <nuumiofi@gmail.com>
+Date: Sun, 2 Oct 2022 19:50:37 +0300
+Subject: [PATCH 1/2] rockpro64: disable usb start at boot
+
+---
+ configs/rockpro64-rk3399_defconfig | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/configs/rockpro64-rk3399_defconfig b/configs/rockpro64-rk3399_defconfig
+index b0c3527fab..10b50cf214 100644
+--- a/configs/rockpro64-rk3399_defconfig
++++ b/configs/rockpro64-rk3399_defconfig
+@@ -95,3 +95,7 @@ CONFIG_VIDEO_ROCKCHIP=y
+ CONFIG_DISPLAY_ROCKCHIP_HDMI=y
+ CONFIG_SPL_TINY_MEMSET=y
+ CONFIG_ERRNO_STR=y
++# Default is CONFIG_PREBOOT="usb start" when CONFIG_USB_KEYBOARD=y
++# That causes usb device probe which is _slow_. Clear CONFIG_PREBOOT
++# to make boot faster, but disables USB at u-boot.
++CONFIG_PREBOOT=""
+-- 
+2.37.3
+

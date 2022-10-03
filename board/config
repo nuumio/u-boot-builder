@@ -1,0 +1,5 @@
+# This is for all boards. Override in deeper configs.
+ATF_VERSION=v2.7.0
+ATF_CROSS_COMPILE=aarch64-linux-gnu-
+UBOOT_VERSION=v2022.07
+UBOOT_CROSS_COMPILE=aarch64-linux-gnu-

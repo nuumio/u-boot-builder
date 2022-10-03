@@ -1,0 +1,43 @@
+name: Pull Request
+on: [pull_request]
+jobs:
+  build:
+    name: Build U-Boot
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install toolchains
+        run: |
+          sudo apt update
+          sudo apt install gcc-aarch64-linux-gnu device-tree-compiler gcc-arm-none-eabi
+      - name: Build
+        id: build
+        run: |
+          ./uboot-builder.sh
+      - name: Archive artifacts
+        # Archive what ever we have even after failed build
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: u-boot-pr-${{ github.event.number }}-build-${{ github.run_number }}
+          path: ${{ github.workspace }}/build/binaries/
+      - name: Leave a comment
+        # Always comment
+        if: ${{ always() }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const {readFile} = require('node:fs/promises')
+            let body
+            try {
+              body = await readFile('build/comment.md', {encoding: 'utf8'})
+            } catch (e) {
+              body = `# Error in commenting\n\n\`\`\`\n${e.stack}\n\`\`\`\n`
+            }
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body,
+            })

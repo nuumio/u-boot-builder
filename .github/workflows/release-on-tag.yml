@@ -1,0 +1,31 @@
+name: Release
+on:
+  push:
+    tags:
+      - '**'
+jobs:
+  build:
+    name: Build U-Boot
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install toolchains
+        run: |
+          sudo apt update
+          sudo apt install gcc-aarch64-linux-gnu device-tree-compiler gcc-arm-none-eabi
+      - name: Build
+        env:
+          RELEASE_VERSION: ${{ github.ref_name }}
+        run: |
+          # Store all output so we can publish build log too for
+          # later inspection if needed. It's good for transparency too.
+          mkdir -p build
+          ./uboot-builder.sh 2>&1 | tee build/build.log
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          body_path: build/release.md
+          files: |
+            build/u-boot-*.tar.gz*
+            build/build/build.log
