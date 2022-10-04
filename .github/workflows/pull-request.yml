@@ -14,14 +14,19 @@ jobs:
       - name: Build
         id: build
         run: |
-          ./uboot-builder.sh
+          # Store all output so we can publish build log too for
+          # later inspection if needed. It's good for transparency too.
+          mkdir -p build
+          ./uboot-builder.sh 2>&1 | tee build/build.log
       - name: Archive artifacts
         # Archive what ever we have even after failed build
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
           name: u-boot-pr-${{ github.event.number }}-build-${{ github.run_number }}
-          path: ${{ github.workspace }}/build/binaries/
+          path: |
+            ${{ github.workspace }}/build/binaries/
+            build/build.log
       - name: Leave a comment
         # Always comment
         if: ${{ always() }}
