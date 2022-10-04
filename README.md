@@ -24,3 +24,8 @@ U-Boot and Arm Trusted Firmware have their own licences.
 - patch apply order: closest to root first in filename sort order.
 - directory structure in `boards` is expected to have `platform`/`board`
   as leaf directories (which may contain `atf-patches` and `uboot-patches`)
+
+# Running things locally
+
+There's a `Dockerfile` in repo root to build a image for running the build
+script `uboot-builder.sh` in container on x86 machines.
