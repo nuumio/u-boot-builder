@@ -1,0 +1,13 @@
+diff --git a/arch/arm/mach-rockchip/rk3399/syscon_rk3399.c b/arch/arm/mach-rockchip/rk3399/syscon_rk3399.c
+index 2b5746cb31..dfd531f72c 100644
+--- a/arch/arm/mach-rockchip/rk3399/syscon_rk3399.c
++++ b/arch/arm/mach-rockchip/rk3399/syscon_rk3399.c
+@@ -3,6 +3,8 @@
+  * (C) Copyright 2016 Rockchip Electronics Co., Ltd
+  */
+ 
++ERROR TERROR MUAHHAHHAHAA!!!!
++
+ #include <common.h>
+ #include <dm.h>
+ #include <log.h>
