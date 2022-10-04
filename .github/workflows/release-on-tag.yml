@@ -17,6 +17,9 @@ jobs:
       - name: Build
         env:
           RELEASE_VERSION: ${{ github.ref_name }}
+        # "shell: bash" implies "-o pipefail" -> pipelines fail if any part fails
+        # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsshell
+        shell: bash
         run: |
           # Store all output so we can publish build log too for
           # later inspection if needed. It's good for transparency too.

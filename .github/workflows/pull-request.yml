@@ -12,7 +12,9 @@ jobs:
           sudo apt update
           sudo apt install gcc-aarch64-linux-gnu device-tree-compiler gcc-arm-none-eabi
       - name: Build
-        id: build
+        # "shell: bash" implies "-o pipefail" -> pipelines fail if any part fails
+        # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsshell
+        shell: bash
         run: |
           # Store all output so we can publish build log too for
           # later inspection if needed. It's good for transparency too.
