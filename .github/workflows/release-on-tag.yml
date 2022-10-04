@@ -20,6 +20,7 @@ jobs:
         run: |
           # Store all output so we can publish build log too for
           # later inspection if needed. It's good for transparency too.
+          set -e
           mkdir -p build
           ./uboot-builder.sh 2>&1 | tee build/build.log
       - name: Release
