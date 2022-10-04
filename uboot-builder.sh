@@ -83,11 +83,11 @@ build() {
   git-update ATF "${ATF_REPO}" "${ATF_VERSION}" "${ATF_DIR}"
   patch-pkg ATF "${ATF_PATCHES[@]}"
   echo "Building ATF ..."
-  (set -x; make "PLAT=${ATF_PLATFORM}" "CROSS_COMPILE=${ATF_CROSS_COMPILE}" -j${NPROC})
+  (set -x; make "PLAT=${ATF_PLATFORM}" "CROSS_COMPILE=${ATF_CROSS_COMPILE}" -j${NPROC}) || return 1
   BL31="$(pwd)/build/${ATF_PLATFORM}/release/bl31/bl31.elf"
   if [ ! -f "${BL31}" ]; then
     echo "ATF ERROR, BL31 file not found: ${BL31}"
-    exit 1
+    return 1
   fi
 
   # Build U-Boot
@@ -95,8 +95,8 @@ build() {
   git-update U-Boot "${UBOOT_REPO}" "${UBOOT_VERSION}" "${UBOOT_DIR}"
   patch-pkg U-Boot "${UBOOT_PATCHES[@]}"
   echo "Building U-Boot ..."
-  (set -x; make "BL31=${BL31}" "CROSS_COMPILE=${UBOOT_CROSS_COMPILE}" "${UBOOT_CONFIG}")
-  (set -x; make "BL31=${BL31}" "CROSS_COMPILE=${UBOOT_CROSS_COMPILE}" all -j${NPROC})
+  (set -x; make "BL31=${BL31}" "CROSS_COMPILE=${UBOOT_CROSS_COMPILE}" "${UBOOT_CONFIG}") || return 1
+  (set -x; make "BL31=${BL31}" "CROSS_COMPILE=${UBOOT_CROSS_COMPILE}" all -j${NPROC}) || return 1
   cp [iu]*.{img,bin,itb} "${BIN_TARGET}/"
 }
 
@@ -162,8 +162,10 @@ for conf in $(find board -mindepth 3 -type f -name config | sort); do
 
   # Build and keep going even if board's build fails
   if build; then
+    echo "${TARGET}: build success"
     echo "- ✔️ \`${TARGET}\`: build success 🛠️" >> "${STATUS_FILE}"
   else
+    echo "${TARGET}: build failure"
     echo "- 🛑 \`${TARGET}\`: build failure 💩" >> "${STATUS_FILE}"
     FAILS=$((FAILS + 1))
   fi
