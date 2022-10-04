@@ -56,6 +56,10 @@ patch-pkg() {
   done  
 }
 
+# Store nproc just to make "make debug" output cleaner.
+# (set -x trick would print "++nproc" line if using "make -j$(nproc)").
+NPROC="$(nproc)"
+
 # Build ATF and U-Boot (expects variables set before being called)
 build() {
   echo "Building target ${TARGET}:"
@@ -79,7 +83,7 @@ build() {
   git-update ATF "${ATF_REPO}" "${ATF_VERSION}" "${ATF_DIR}"
   patch-pkg ATF "${ATF_PATCHES[@]}"
   echo "Building ATF ..."
-  make "PLAT=${ATF_PLATFORM}" "CROSS_COMPILE=${ATF_CROSS_COMPILE}"
+  (set -x; make "PLAT=${ATF_PLATFORM}" "CROSS_COMPILE=${ATF_CROSS_COMPILE}" -j${NPROC})
   BL31="$(pwd)/build/${ATF_PLATFORM}/release/bl31/bl31.elf"
   if [ ! -f "${BL31}" ]; then
     echo "ATF ERROR, BL31 file not found: ${BL31}"
@@ -91,8 +95,8 @@ build() {
   git-update U-Boot "${UBOOT_REPO}" "${UBOOT_VERSION}" "${UBOOT_DIR}"
   patch-pkg U-Boot "${UBOOT_PATCHES[@]}"
   echo "Building U-Boot ..."
-  make "BL31=${BL31}" "CROSS_COMPILE=${UBOOT_CROSS_COMPILE}" "${UBOOT_CONFIG}"
-  make "BL31=${BL31}" "CROSS_COMPILE=${UBOOT_CROSS_COMPILE}" all -j$(nproc)
+  (set -x; make "BL31=${BL31}" "CROSS_COMPILE=${UBOOT_CROSS_COMPILE}" "${UBOOT_CONFIG}")
+  (set -x; make "BL31=${BL31}" "CROSS_COMPILE=${UBOOT_CROSS_COMPILE}" all -j${NPROC})
   cp [iu]*.{img,bin,itb} "${BIN_TARGET}/"
 }
 
