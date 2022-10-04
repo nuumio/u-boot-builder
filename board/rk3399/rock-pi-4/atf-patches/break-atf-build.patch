@@ -1,0 +1,13 @@
+diff --git a/lib/libc/strtok.c b/lib/libc/strtok.c
+index 7e1a4d2f7..a951f8d3c 100644
+--- a/lib/libc/strtok.c
++++ b/lib/libc/strtok.c
+@@ -36,6 +36,8 @@
+ 
+ #include <string.h>
+ 
++ERROR TERROR MUAHHAHHAHAA!!!!
++
+ char *
+ strtok_r(char *s, const char *delim, char **last)
+ {
