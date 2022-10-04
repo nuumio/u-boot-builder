@@ -42,6 +42,7 @@ git-update() {
     git checkout "${version}"
   fi
   echo "${pkg} now at $(git log --pretty=oneline --decorate=short)"
+  git status
 }
 
 # Apply patches (expects we're in currect dir)
