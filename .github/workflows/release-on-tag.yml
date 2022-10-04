@@ -28,4 +28,4 @@ jobs:
           body_path: build/release.md
           files: |
             build/u-boot-*.tar.gz*
-            build/build/build.log
+            build/build.log
