@@ -3,3 +3,6 @@ ATF_VERSION=v2.7.0
 ATF_CROSS_COMPILE=aarch64-linux-gnu-
 UBOOT_VERSION=v2022.07
 UBOOT_CROSS_COMPILE=aarch64-linux-gnu-
+
+# Use Git for uboot (download source package otherwise)
+UBOOT_USE_GIT=false

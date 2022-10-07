@@ -9,6 +9,7 @@ UBOOT_REPO=${UBOOT_REPO:-https://github.com/u-boot/u-boot.git}
 # NOTE: check that ./github/workflows/* work if you change these variables!
 CUR_DIR="$(pwd)"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+DL_DIR="${DL_DIR:-dl}"
 BUILD_DIR="${BUILD_DIR:-build}"
 ATF_DIR="${ATF_DIR:-atf}"
 UBOOT_DIR="${UBOOT_DIR:-uboot}"
@@ -29,20 +30,55 @@ git-update() {
   local repo="${2}"
   local version="${3}"
   local dir="${4}"
+  # Just in case we used download earlier and now we want git:
+  # If "${dir}" exists but "${dir}/.git" doesn't then rm "${dir}".
+  if [ -d "${dir}" ] && [ ! -d "${dir}/.git" ]; then
+    echo "Clean existing dir \""${dir}"\" for Git"
+    rm -rf "${dir}"
+  fi
   if [ ! -d "${dir}" ]; then
     echo "Cloning ${pkg} version ${version}"
-    git clone --depth 1 --branch "${version}" "${repo}" "${dir}"
+    git clone --depth 1 --branch "${version}" "${repo}" "${dir}"  || return 1
     cd "${dir}"
   else
     echo "Fetching ${pkg} version ${version}"
     cd "${dir}"
-    git reset --hard HEAD
-    git clean -dfxq
-    git fetch --depth 1 origin tag "${version}"
-    git checkout "${version}"
+    git reset --hard HEAD || return 1
+    git clean -dfxq || return 1
+    git fetch --depth 1 origin tag "${version}" || return 1
+    git checkout "${version}" || return 1
   fi
   echo "${pkg} now at $(git log --pretty=oneline --decorate=short)"
   git status
+}
+
+dl-pkg() {
+  local pkg="${1}"
+  local version="${2}"
+  local file="${3}"
+  local url="${4}"
+  local fullpath="${SCRIPT_DIR}/${DL_DIR}/${file}"
+  if [ -f "${fullpath}" ]; then
+    echo "${pkg} ${version} already downloaded to ${DL_DIR}/${file}"
+    return 0
+  fi
+  echo "${pkg} ${version} downloading to ${DL_DIR}/${file}"
+  mkdir -p "$(dirname "${fullpath}")"
+  (set -x; curl -o "${fullpath}" "${url}") || return 1
+}
+
+unpack-pkg() {
+  local pkg="${1}"
+  local version="${2}"
+  local file="${3}"
+  local where="${4}"
+  local fullpath="${SCRIPT_DIR}/${DL_DIR}/${file}"
+  if [ ! -f "${fullpath}" ]; then
+    echo "${pkg} ${version} file not found: ${DL_DIR}/${file}"
+    return 1
+  fi
+  echo "${pkg} ${version} unpacking source from ${DL_DIR}/${file}"
+  (set -x; tar xf "${fullpath}" --strip-components=1 -C "${where}") || return 1
 }
 
 # Apply patches (expects we're in currect dir)
@@ -52,7 +88,7 @@ patch-pkg() {
   local patches=("${@}")
   for p in "${patches[@]}"; do
     echo "Applying patch ${p} ..."
-    patch -p1 < "${SCRIPT_DIR}/${p}"
+    patch -p1 < "${SCRIPT_DIR}/${p}" || return 1
   done  
 }
 
@@ -62,6 +98,7 @@ NPROC="$(nproc)"
 
 # Build ATF and U-Boot (expects variables set before being called)
 build() {
+  echo -e "\n========================================\n"
   echo "Building target ${TARGET}:"
   echo "  ATF_VERSION: ${ATF_VERSION}"
   echo "  ATF_PLATFORM: ${ATF_PLATFORM}"
@@ -77,11 +114,12 @@ build() {
   for i in "${UBOOT_PATCHES[@]}"; do
     echo "    $i"
   done
+  echo -e "\n========================================\n"
 
   # Build ATF
   cd "${CUR_DIR}/${BUILD_DIR}"
-  git-update ATF "${ATF_REPO}" "${ATF_VERSION}" "${ATF_DIR}"
-  patch-pkg ATF "${ATF_PATCHES[@]}"
+  git-update ATF "${ATF_REPO}" "${ATF_VERSION}" "${ATF_DIR}" || return 1
+  patch-pkg ATF "${ATF_PATCHES[@]}" || return 1
   echo "Building ATF ..."
   (set -x; make "PLAT=${ATF_PLATFORM}" "CROSS_COMPILE=${ATF_CROSS_COMPILE}" -j${NPROC}) || return 1
   BL31="$(pwd)/build/${ATF_PLATFORM}/release/bl31/bl31.elf"
@@ -92,8 +130,18 @@ build() {
 
   # Build U-Boot
   cd "${CUR_DIR}/${BUILD_DIR}"
-  git-update U-Boot "${UBOOT_REPO}" "${UBOOT_VERSION}" "${UBOOT_DIR}"
-  patch-pkg U-Boot "${UBOOT_PATCHES[@]}"
+  if "${UBOOT_USE_GIT}" > /dev/null 2>&1; then
+    git-update U-Boot "${UBOOT_REPO}" "${UBOOT_VERSION}" "${UBOOT_DIR}" || return 1
+  else
+    dl-pkg "U-Boot" "${UBOOT_VERSION}" "u-boot-${UBOOT_VERSION/v/}.tar.bz2" \
+      "https://ftp.denx.de/pub/u-boot/u-boot-${UBOOT_VERSION/v/}.tar.bz2" || return 1
+    # Ensure clean source
+    rm -rf "${UBOOT_DIR}"
+    mkdir -p "${UBOOT_DIR}" || return 1
+    unpack-pkg "U-Boot" "${UBOOT_VERSION}" "u-boot-${UBOOT_VERSION/v/}.tar.bz2" "${UBOOT_DIR}" || return 1
+    cd "${UBOOT_DIR}" || return 1
+  fi
+  patch-pkg U-Boot "${UBOOT_PATCHES[@]}" || return 1
   echo "Building U-Boot ..."
   (set -x; make "BL31=${BL31}" "CROSS_COMPILE=${UBOOT_CROSS_COMPILE}" "${UBOOT_CONFIG}") || return 1
   (set -x; make "BL31=${BL31}" "CROSS_COMPILE=${UBOOT_CROSS_COMPILE}" all -j${NPROC}) || return 1
@@ -124,6 +172,7 @@ for conf in $(find board -mindepth 3 -type f -name config | sort); do
   unset UBOOT_VERSION
   unset UBOOT_CONFIG
   unset UBOOT_CROSS_COMPILE
+  UBOOT_USE_GIT=false
   ATF_PATCHES=()
   UBOOT_PATCHES=()
 

@@ -14,6 +14,7 @@ RUN set -ex \
         bison \
         build-essential \
         ca-certificates \
+        curl \
         device-tree-compiler \
         dosfstools \
         flex \
