@@ -173,107 +173,112 @@ CUR_PLATFORM=""
 # Failure counter
 FAILS=0
 
-# Loop over all found board configs (min depth of 3 dirs),
+# Loop over all found platforms configs (depth of 1 dir, this keeps
+# platforms in nice order).
+# Then loop over all found board configs (min depth of 2 dirs in platform).
 # NOTE: Don't use spaces in dir/file names (or fix this yourself :P).
 #       And use board/_platform_/_board_ dir structure.
-for conf in $(find board -mindepth 3 -type f -name config | sort); do
-  unset ATF_VERSION
-  unset ATF_PLATFORM
-  unset ATF_CROSS_COMPILE
-  unset UBOOT_VERSION
-  unset UBOOT_CONFIG
-  unset UBOOT_CROSS_COMPILE
-  unset PLAT_ATF_VERSION
-  unset PLAT_UBOOT_VERSION
-  unset PLAT_NOTE_EXTRA
-  unset BOARD_NOTE_EXTRA
-  UBOOT_USE_GIT=false
-  ATF_PATCHES=()
-  UBOOT_PATCHES=()
-  I=0
-
-  # Figure out target from config file path
+for dplat in $(find board -mindepth 1 -maxdepth 1 -type d | sort); do
   cd "${SCRIPT_DIR}"
-  d="$(dirname "$conf")"
-  target_path="${d//board\//}"
-  TARGET_BOARD="$(basename "${target_path}")"
-  TARGET_PLATFORM="$(basename $(dirname "${target_path}"))"
-  TARGET="${TARGET_PLATFORM}/${TARGET_BOARD}"
+  for conf in $(find "${dplat}" -mindepth 2 -type f -name config | sort); do
+    unset ATF_VERSION
+    unset ATF_PLATFORM
+    unset ATF_CROSS_COMPILE
+    unset UBOOT_VERSION
+    unset UBOOT_CONFIG
+    unset UBOOT_CROSS_COMPILE
+    unset PLAT_ATF_VERSION
+    unset PLAT_UBOOT_VERSION
+    unset PLAT_NOTE_EXTRA
+    unset BOARD_NOTE_EXTRA
+    UBOOT_USE_GIT=false
+    ATF_PATCHES=()
+    UBOOT_PATCHES=()
+    I=0
 
-  # Find configs and patches from board dir to leaf
-  split="${d//\// }"
-  confd="."
-  for s in ${split}; do
-    I=$((I + 1))
-    confd="${confd}/${s}"
-    if [ -f "${confd}/config" ]; then
-      . "${confd}/config"
-    fi
-    if [ -d "${confd}/atf-patches" ]; then
-      for p in $(find "${confd}/atf-patches" -type f -name "*.patch" | sort); do
-        ATF_PATCHES+=("${p:2}")
-      done
-    fi
-    if [ -d "${confd}/uboot-patches" ]; then
-      for p in $(find "${confd}/uboot-patches" -type f -name "*.patch" | sort); do
-        UBOOT_PATCHES+=("${p:2}")
-      done
-    fi
-    if [ "${I}" -eq 2 ]; then
-      # platform level
-      PLAT_ATF_VERSION="${ATF_VERSION}"
-      PLAT_UBOOT_VERSION="${UBOOT_VERSION}"
-      if [ -f "${confd}/rel-note-extra.md" ]; then
-        PLAT_NOTE_EXTRA="$(cat "${confd}/rel-note-extra.md")"
+    # Figure out target from config file path
+    cd "${SCRIPT_DIR}"
+    d="$(dirname "$conf")"
+    target_path="${d//board\//}"
+    TARGET_BOARD="$(basename "${target_path}")"
+    TARGET_PLATFORM="$(basename $(dirname "${target_path}"))"
+    TARGET="${TARGET_PLATFORM}/${TARGET_BOARD}"
+
+    # Find configs and patches from board dir to leaf
+    split="${d//\// }"
+    confd="."
+    for s in ${split}; do
+      I=$((I + 1))
+      confd="${confd}/${s}"
+      if [ -f "${confd}/config" ]; then
+        . "${confd}/config"
       fi
-    fi
-    if [ "${I}" -eq 3 ]; then
-      if [ -f "${confd}/rel-note-extra.md" ]; then
-        BOARD_NOTE_EXTRA="$(cat "${confd}/rel-note-extra.md")"
+      if [ -d "${confd}/atf-patches" ]; then
+        for p in $(find "${confd}/atf-patches" -type f -name "*.patch" | sort); do
+          ATF_PATCHES+=("${p:2}")
+        done
       fi
+      if [ -d "${confd}/uboot-patches" ]; then
+        for p in $(find "${confd}/uboot-patches" -type f -name "*.patch" | sort); do
+          UBOOT_PATCHES+=("${p:2}")
+        done
+      fi
+      if [ "${I}" -eq 2 ]; then
+        # platform level
+        PLAT_ATF_VERSION="${ATF_VERSION}"
+        PLAT_UBOOT_VERSION="${UBOOT_VERSION}"
+        if [ -f "${confd}/rel-note-extra.md" ]; then
+          PLAT_NOTE_EXTRA="$(cat "${confd}/rel-note-extra.md")"
+        fi
+      fi
+      if [ "${I}" -eq 3 ]; then
+        if [ -f "${confd}/rel-note-extra.md" ]; then
+          BOARD_NOTE_EXTRA="$(cat "${confd}/rel-note-extra.md")"
+        fi
+      fi
+    done
+
+    # Prep binaries dir
+    cd "${CUR_DIR}/${BUILD_DIR}"
+    BIN_TARGET="$(pwd)/${BINARIES_DIR}/${TARGET}"
+    mkdir -p "${BIN_TARGET}"
+
+    # Build and keep going even if board's build fails
+    if build; then
+      echo "${TARGET}: build success"
+      echo "- ✔️ \`${TARGET}\`: build success 🛠️" >> "${STATUS_FILE}"
+    else
+      echo "${TARGET}: build failure"
+      echo "- 🛑 \`${TARGET}\`: build failure 💩" >> "${STATUS_FILE}"
+      FAILS=$((FAILS + 1))
+    fi
+
+    # Release note content
+    if [ "${CUR_PLATFORM}" != "${TARGET_PLATFORM}" ]; then
+      CUR_PLATFORM="${TARGET_PLATFORM}"
+      echo "- platform \`${CUR_PLATFORM}\`" >> ${REL_NOTE}
+      if [ "${PLAT_ATF_VERSION}" != "${DEFAULT_ATF_VERSION}" ]; then
+        echo "  - ATF version: \`${PLAT_ATF_VERSION}\`" >> ${REL_NOTE}
+      fi
+      if [ "${PLAT_UBOOT_VERSION}" != "${DEFAULT_UBOOT_VERSION}" ]; then
+        echo "  - ATF version: \`${PLAT_UBOOT_VERSION}\`" >> ${REL_NOTE}
+      fi
+      if [ ! -z "${PLAT_NOTE_EXTRA}" ]; then
+        echo "${PLAT_NOTE_EXTRA}" >> ${REL_NOTE}
+      fi
+      echo "  - board(s):" >> ${REL_NOTE}
+    fi
+    echo "    - \`${TARGET_BOARD}\`" >> ${REL_NOTE}
+    if [ "${ATF_VERSION}" != "${PLAT_ATF_VERSION}" ]; then
+      echo "      - ATF version: \`${ATF_VERSION}\`" >> ${REL_NOTE}
+    fi
+    if [ "${UBOOT_VERSION}" != "${PLAT_UBOOT_VERSION}" ]; then
+      echo "      - U-Boot version: \`${UBOOT_VERSION}\`" >> ${REL_NOTE}
+    fi
+    if [ ! -z "${BOARD_NOTE_EXTRA}" ]; then
+      echo "${BOARD_NOTE_EXTRA}" >> ${REL_NOTE}
     fi
   done
-
-  # Prep binaries dir
-  cd "${CUR_DIR}/${BUILD_DIR}"
-  BIN_TARGET="$(pwd)/${BINARIES_DIR}/${TARGET}"
-  mkdir -p "${BIN_TARGET}"
-
-  # Build and keep going even if board's build fails
-  if build; then
-    echo "${TARGET}: build success"
-    echo "- ✔️ \`${TARGET}\`: build success 🛠️" >> "${STATUS_FILE}"
-  else
-    echo "${TARGET}: build failure"
-    echo "- 🛑 \`${TARGET}\`: build failure 💩" >> "${STATUS_FILE}"
-    FAILS=$((FAILS + 1))
-  fi
-
-  # Release note content
-  if [ "${CUR_PLATFORM}" != "${TARGET_PLATFORM}" ]; then
-    CUR_PLATFORM="${TARGET_PLATFORM}"
-    echo "- platform \`${CUR_PLATFORM}\`" >> ${REL_NOTE}
-    if [ "${PLAT_ATF_VERSION}" != "${DEFAULT_ATF_VERSION}" ]; then
-      echo "  - ATF version: \`${PLAT_ATF_VERSION}\`" >> ${REL_NOTE}
-    fi
-    if [ "${PLAT_UBOOT_VERSION}" != "${DEFAULT_UBOOT_VERSION}" ]; then
-      echo "  - ATF version: \`${PLAT_UBOOT_VERSION}\`" >> ${REL_NOTE}
-    fi
-    if [ ! -z "${PLAT_NOTE_EXTRA}" ]; then
-      echo "${PLAT_NOTE_EXTRA}" >> ${REL_NOTE}
-    fi
-    echo "  - board(s):" >> ${REL_NOTE}
-  fi
-  echo "    - \`${TARGET_BOARD}\`" >> ${REL_NOTE}
-  if [ "${ATF_VERSION}" != "${PLAT_ATF_VERSION}" ]; then
-    echo "      - ATF version: \`${ATF_VERSION}\`" >> ${REL_NOTE}
-  fi
-  if [ "${UBOOT_VERSION}" != "${PLAT_UBOOT_VERSION}" ]; then
-    echo "      - U-Boot version: \`${UBOOT_VERSION}\`" >> ${REL_NOTE}
-  fi
-  if [ ! -z "${BOARD_NOTE_EXTRA}" ]; then
-    echo "${BOARD_NOTE_EXTRA}" >> ${REL_NOTE}
-  fi
 done
 
 # If doing a release, pack binaries and print release note on build log.
