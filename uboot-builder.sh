@@ -116,8 +116,6 @@ build() {
   done
   echo -e "\n========================================\n"
 
-  return 0;
-
   # Build ATF
   cd "${CUR_DIR}/${BUILD_DIR}"
   git-update ATF "${ATF_REPO}" "${ATF_VERSION}" "${ATF_DIR}" || return 1
@@ -184,6 +182,8 @@ for conf in $(find board -mindepth 3 -type f -name config | sort); do
   unset UBOOT_CROSS_COMPILE
   unset PLAT_ATF_VERSION
   unset PLAT_UBOOT_VERSION
+  unset PLAT_NOTE_EXTRA
+  unset BOARD_NOTE_EXTRA
   UBOOT_USE_GIT=false
   ATF_PATCHES=()
   UBOOT_PATCHES=()
@@ -220,6 +220,14 @@ for conf in $(find board -mindepth 3 -type f -name config | sort); do
       # platform level
       PLAT_ATF_VERSION="${ATF_VERSION}"
       PLAT_UBOOT_VERSION="${UBOOT_VERSION}"
+      if [ -f "${confd}/rel-note-extra.md" ]; then
+        PLAT_NOTE_EXTRA="$(cat "${confd}/rel-note-extra.md")"
+      fi
+    fi
+    if [ "${I}" -eq 3 ]; then
+      if [ -f "${confd}/rel-note-extra.md" ]; then
+        BOARD_NOTE_EXTRA="$(cat "${confd}/rel-note-extra.md")"
+      fi
     fi
   done
 
@@ -248,6 +256,9 @@ for conf in $(find board -mindepth 3 -type f -name config | sort); do
     if [ "${PLAT_UBOOT_VERSION}" != "${DEFAULT_UBOOT_VERSION}" ]; then
       echo "  - ATF version: \`${PLAT_UBOOT_VERSION}\`" >> ${REL_NOTE}
     fi
+    if [ ! -z "${PLAT_NOTE_EXTRA}" ]; then
+      echo "${PLAT_NOTE_EXTRA}" >> ${REL_NOTE}
+    fi
     echo "  - board(s):" >> ${REL_NOTE}
   fi
   echo "    - \`${TARGET_BOARD}\`" >> ${REL_NOTE}
@@ -256,6 +267,9 @@ for conf in $(find board -mindepth 3 -type f -name config | sort); do
   fi
   if [ "${UBOOT_VERSION}" != "${PLAT_UBOOT_VERSION}" ]; then
     echo "      - U-Boot version: \`${UBOOT_VERSION}\`" >> ${REL_NOTE}
+  fi
+  if [ ! -z "${BOARD_NOTE_EXTRA}" ]; then
+    echo "${BOARD_NOTE_EXTRA}" >> ${REL_NOTE}
   fi
 done
 
