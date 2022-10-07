@@ -151,6 +151,9 @@ build() {
 # Prep build dir
 mkdir -p "${CUR_DIR}/${BUILD_DIR}"
 
+# Clean status, release note and comment every time
+rm -rf "${STATUS_FILE}" "${REL_NOTE}" "${COMMENT_FILE}"
+
 # Release header. Print default ATF and U-Boot versions if found (should be found).
 echo -e "Default ATF and U-Boot versions (platforms/boards use these unless otherwise noted):\n" >> ${REL_NOTE}
 . board/config
@@ -300,4 +303,6 @@ if [ "${FAILS}" -gt 0 ]; then
 else
   echo -e "# BUILD SUCCESS 🥳\n" >> "${COMMENT_FILE}"
   cat "${STATUS_FILE}" >> "${COMMENT_FILE}"
+  echo -e "\n# Release note "preview":\n" >> "${COMMENT_FILE}"
+  cat "${REL_NOTE}" >> "${COMMENT_FILE}"
 fi
