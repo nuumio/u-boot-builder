@@ -33,6 +33,7 @@ RUN set -ex \
         python3 \
         python3-dev \
         python3-distutils \
+        python3-setuptools \
         python-pyelftools \
         rename \
         sed \

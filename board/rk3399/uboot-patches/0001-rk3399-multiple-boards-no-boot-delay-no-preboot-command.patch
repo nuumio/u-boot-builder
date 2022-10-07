@@ -1,31 +1,38 @@
 diff --git a/configs/orangepi-rk3399_defconfig b/configs/orangepi-rk3399_defconfig
-index 461300fd10..4ef651fda0 100644
+index fa117ba8d1..fb6a353d18 100644
 --- a/configs/orangepi-rk3399_defconfig
 +++ b/configs/orangepi-rk3399_defconfig
-@@ -57,3 +57,5 @@ CONFIG_USB_ETHER_RTL8152=y
+@@ -65,3 +65,5 @@ CONFIG_USB_ETHER_RTL8152=y
  CONFIG_USB_ETHER_SMSC95XX=y
  CONFIG_SPL_TINY_MEMSET=y
  CONFIG_ERRNO_STR=y
 +# Faster boot w/o delay
 +CONFIG_BOOTDELAY=0
 diff --git a/configs/pinebook-pro-rk3399_defconfig b/configs/pinebook-pro-rk3399_defconfig
-index aaa52c6ea7..6290b4d614 100644
+index 5d9a841899..21eb4d4d15 100644
 --- a/configs/pinebook-pro-rk3399_defconfig
 +++ b/configs/pinebook-pro-rk3399_defconfig
-@@ -15,7 +15,7 @@ CONFIG_SPL_SPI_FLASH_SUPPORT=y
- CONFIG_SPL_SPI=y
- CONFIG_SYS_LOAD_ADDR=0x800800
+@@ -17,7 +17,6 @@ CONFIG_SYS_LOAD_ADDR=0x800800
  CONFIG_DEBUG_UART=y
+ CONFIG_HAS_CUSTOM_SYS_INIT_SP_ADDR=y
+ CONFIG_CUSTOM_SYS_INIT_SP_ADDR=0x300000
 -CONFIG_BOOTDELAY=3
-+CONFIG_BOOTDELAY=0
  CONFIG_USE_PREBOOT=y
  CONFIG_DEFAULT_FDT_FILE="rockchip/rk3399-pinebook-pro.dtb"
  CONFIG_DISPLAY_BOARDINFO_LATE=y
+@@ -103,3 +102,7 @@ CONFIG_VIDEO_ROCKCHIP=y
+ CONFIG_DISPLAY_ROCKCHIP_EDP=y
+ CONFIG_SPL_TINY_MEMSET=y
+ CONFIG_ERRNO_STR=y
++# Faster boot w/o delay and usb.
++# (Default is CONFIG_PREBOOT="usb start" when CONFIG_USB_KEYBOARD=y)
++CONFIG_BOOTDELAY=0
++CONFIG_PREBOOT=""
 diff --git a/configs/rock-pi-4-rk3399_defconfig b/configs/rock-pi-4-rk3399_defconfig
-index 80d1e63b59..5685a65dce 100644
+index f8a57f6838..19cf555d12 100644
 --- a/configs/rock-pi-4-rk3399_defconfig
 +++ b/configs/rock-pi-4-rk3399_defconfig
-@@ -76,3 +76,7 @@ CONFIG_VIDEO_ROCKCHIP=y
+@@ -84,3 +84,7 @@ CONFIG_VIDEO_ROCKCHIP=y
  CONFIG_DISPLAY_ROCKCHIP_HDMI=y
  CONFIG_SPL_TINY_MEMSET=y
  CONFIG_ERRNO_STR=y
@@ -34,10 +41,10 @@ index 80d1e63b59..5685a65dce 100644
 +CONFIG_BOOTDELAY=0
 +CONFIG_PREBOOT=""
 diff --git a/configs/rock-pi-4c-rk3399_defconfig b/configs/rock-pi-4c-rk3399_defconfig
-index bda4b70dbf..03b6ed33d4 100644
+index 9aa7809bd0..ecd42154dd 100644
 --- a/configs/rock-pi-4c-rk3399_defconfig
 +++ b/configs/rock-pi-4c-rk3399_defconfig
-@@ -76,3 +76,7 @@ CONFIG_VIDEO_ROCKCHIP=y
+@@ -84,3 +84,7 @@ CONFIG_VIDEO_ROCKCHIP=y
  CONFIG_DISPLAY_ROCKCHIP_HDMI=y
  CONFIG_SPL_TINY_MEMSET=y
  CONFIG_ERRNO_STR=y
@@ -46,10 +53,10 @@ index bda4b70dbf..03b6ed33d4 100644
 +CONFIG_BOOTDELAY=0
 +CONFIG_PREBOOT=""
 diff --git a/configs/rock960-rk3399_defconfig b/configs/rock960-rk3399_defconfig
-index be0e1c7d18..720b5c685f 100644
+index daa0d3ddf5..66c189e55d 100644
 --- a/configs/rock960-rk3399_defconfig
 +++ b/configs/rock960-rk3399_defconfig
-@@ -78,3 +78,7 @@ CONFIG_VIDEO_ROCKCHIP=y
+@@ -88,3 +88,7 @@ CONFIG_VIDEO_ROCKCHIP=y
  CONFIG_DISPLAY_ROCKCHIP_HDMI=y
  CONFIG_SPL_TINY_MEMSET=y
  CONFIG_ERRNO_STR=y
@@ -58,10 +65,10 @@ index be0e1c7d18..720b5c685f 100644
 +CONFIG_BOOTDELAY=0
 +CONFIG_PREBOOT=""
 diff --git a/configs/rockpro64-rk3399_defconfig b/configs/rockpro64-rk3399_defconfig
-index b0c3527fab..a49801a5f2 100644
+index 87fe8c4046..6d415f56cc 100644
 --- a/configs/rockpro64-rk3399_defconfig
 +++ b/configs/rockpro64-rk3399_defconfig
-@@ -95,3 +95,7 @@ CONFIG_VIDEO_ROCKCHIP=y
+@@ -104,3 +104,7 @@ CONFIG_VIDEO_ROCKCHIP=y
  CONFIG_DISPLAY_ROCKCHIP_HDMI=y
  CONFIG_SPL_TINY_MEMSET=y
  CONFIG_ERRNO_STR=y
