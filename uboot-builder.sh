@@ -116,6 +116,8 @@ build() {
   done
   echo -e "\n========================================\n"
 
+  return 0;
+
   # Build ATF
   cd "${CUR_DIR}/${BUILD_DIR}"
   git-update ATF "${ATF_REPO}" "${ATF_VERSION}" "${ATF_DIR}" || return 1
@@ -151,10 +153,18 @@ build() {
 # Prep build dir
 mkdir -p "${CUR_DIR}/${BUILD_DIR}"
 
-# Release header
-if [ ! -z "${RELEASE_VERSION}" ]; then
-  echo -e "Boards included:\n" >> ${REL_NOTE}
+# Release header. Print default ATF and U-Boot versions if found (should be found).
+echo -e "Default ATF and U-Boot versions (platforms/boards use these unless otherwise noted):\n" >> ${REL_NOTE}
+. board/config
+DEFAULT_ATF_VERSION="${ATF_VERSION}"
+DEFAULT_UBOOT_VERSION="${UBOOT_VERSION}"
+if [ ! -z "${ATF_VERSION}" ]; then
+  echo "- ATF: \`${ATF_VERSION}\`" >> ${REL_NOTE}
 fi
+if [ ! -z "${UBOOT_VERSION}" ]; then
+  echo "- U-Boot: \`${UBOOT_VERSION}\`" >> ${REL_NOTE}
+fi
+echo -e "\nBoards included:\n" >> ${REL_NOTE}
 
 # Current platform (for release note)
 CUR_PLATFORM=""
@@ -172,9 +182,12 @@ for conf in $(find board -mindepth 3 -type f -name config | sort); do
   unset UBOOT_VERSION
   unset UBOOT_CONFIG
   unset UBOOT_CROSS_COMPILE
+  unset PLAT_ATF_VERSION
+  unset PLAT_UBOOT_VERSION
   UBOOT_USE_GIT=false
   ATF_PATCHES=()
   UBOOT_PATCHES=()
+  I=0
 
   # Figure out target from config file path
   cd "${SCRIPT_DIR}"
@@ -188,6 +201,7 @@ for conf in $(find board -mindepth 3 -type f -name config | sort); do
   split="${d//\// }"
   confd="."
   for s in ${split}; do
+    I=$((I + 1))
     confd="${confd}/${s}"
     if [ -f "${confd}/config" ]; then
       . "${confd}/config"
@@ -201,6 +215,11 @@ for conf in $(find board -mindepth 3 -type f -name config | sort); do
       for p in $(find "${confd}/uboot-patches" -type f -name "*.patch" | sort); do
         UBOOT_PATCHES+=("${p:2}")
       done
+    fi
+    if [ "${I}" -eq 2 ]; then
+      # platform level
+      PLAT_ATF_VERSION="${ATF_VERSION}"
+      PLAT_UBOOT_VERSION="${UBOOT_VERSION}"
     fi
   done
 
@@ -220,14 +239,23 @@ for conf in $(find board -mindepth 3 -type f -name config | sort); do
   fi
 
   # Release note content
-  if [ ! -z "${RELEASE_VERSION}" ]; then
-    if [ "${CUR_PLATFORM}" != "${TARGET_PLATFORM}" ]; then
-      CUR_PLATFORM="${TARGET_PLATFORM}"
-      echo "- \`${CUR_PLATFORM}\`" >> ${REL_NOTE}
+  if [ "${CUR_PLATFORM}" != "${TARGET_PLATFORM}" ]; then
+    CUR_PLATFORM="${TARGET_PLATFORM}"
+    echo "- platform \`${CUR_PLATFORM}\`" >> ${REL_NOTE}
+    if [ "${PLAT_ATF_VERSION}" != "${DEFAULT_ATF_VERSION}" ]; then
+      echo "  - ATF version: \`${PLAT_ATF_VERSION}\`" >> ${REL_NOTE}
     fi
-    echo "  - \`${TARGET_BOARD}\`" >> ${REL_NOTE}
-    echo "    - ATF version: \`${ATF_VERSION}\`" >> ${REL_NOTE}
-    echo "    - U-Boot version: \`${UBOOT_VERSION}\`" >> ${REL_NOTE}
+    if [ "${PLAT_UBOOT_VERSION}" != "${DEFAULT_UBOOT_VERSION}" ]; then
+      echo "  - ATF version: \`${PLAT_UBOOT_VERSION}\`" >> ${REL_NOTE}
+    fi
+    echo "  - board(s):" >> ${REL_NOTE}
+  fi
+  echo "    - \`${TARGET_BOARD}\`" >> ${REL_NOTE}
+  if [ "${ATF_VERSION}" != "${PLAT_ATF_VERSION}" ]; then
+    echo "      - ATF version: \`${ATF_VERSION}\`" >> ${REL_NOTE}
+  fi
+  if [ "${UBOOT_VERSION}" != "${PLAT_UBOOT_VERSION}" ]; then
+    echo "      - U-Boot version: \`${UBOOT_VERSION}\`" >> ${REL_NOTE}
   fi
 done
 
