@@ -1,0 +1,2 @@
+# This is for all rk3399 boards. Override in deeper configs.
+ATF_PLATFORM=rk3399

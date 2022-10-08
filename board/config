@@ -1,5 +1,17 @@
 # This is for all boards. Override in deeper configs.
 ATF_VERSION=v2.7.0
 ATF_CROSS_COMPILE=aarch64-linux-gnu-
-UBOOT_VERSION=v2022.07
+UBOOT_VERSION=v2022.10
 UBOOT_CROSS_COMPILE=aarch64-linux-gnu-
+UBOOT_BL=BL31
+
+# Bash glob to get u-boot binaries
+UBOOT_BIN_GLOB="[iu]*.{img,bin,itb}"
+
+# Use Git for uboot (download source package otherwise)
+UBOOT_USE_GIT=false
+
+# Default make commands (used for the most of builds)
+ATF_MAKE='make "PLAT=${ATF_PLATFORM}" "CROSS_COMPILE=${ATF_CROSS_COMPILE}" -j$(nproc)'
+UBOOT_MAKE_CONFIG='make "${UBOOT_BL}=${!UBOOT_BL}" "CROSS_COMPILE=${UBOOT_CROSS_COMPILE}" "${UBOOT_CONFIG}"'
+UBOOT_MAKE_BIN='make "${UBOOT_BL}=${!UBOOT_BL}" "CROSS_COMPILE=${UBOOT_CROSS_COMPILE}" all -j$(nproc)'

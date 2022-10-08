@@ -13,7 +13,7 @@ jobs:
       - name: Install toolchains
         run: |
           sudo apt update
-          sudo apt install gcc-aarch64-linux-gnu device-tree-compiler gcc-arm-none-eabi
+          sudo apt install gcc-aarch64-linux-gnu device-tree-compiler gcc-arm-linux-gnueabihf gcc-arm-none-eabi
       - name: Build
         env:
           RELEASE_VERSION: ${{ github.ref_name }}

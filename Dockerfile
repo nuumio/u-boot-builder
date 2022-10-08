@@ -14,11 +14,13 @@ RUN set -ex \
         bison \
         build-essential \
         ca-certificates \
+        curl \
         device-tree-compiler \
         dosfstools \
         flex \
         gawk \
         gcc-aarch64-linux-gnu \
+        gcc-arm-linux-gnueabihf \
         gcc-arm-none-eabi \
         git \
         less \
@@ -32,6 +34,7 @@ RUN set -ex \
         python3 \
         python3-dev \
         python3-distutils \
+        python3-setuptools \
         python-pyelftools \
         rename \
         sed \

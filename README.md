@@ -21,6 +21,8 @@ U-Boot and Arm Trusted Firmware have their own licences.
     - `UBOOT_VERSION` U-Boot version to build (use a tag)
     - `UBOOT_CONFIG` U-Boot defconfig (used in make)
     - `UBOOT_CROSS_COMPILE` U-Boot CROSS_COMPILE option (used in make)
+    - `UBOOT_USE_GIT` (`true` or `false`) Use Git to get U-Boot sources if `true`;
+      otherwise download sources with `curl` (default: `false` -> use `curl`).
 - patch apply order: closest to root first in filename sort order.
 - directory structure in `boards` is expected to have `platform`/`board`
   as leaf directories (which may contain `atf-patches` and `uboot-patches`)

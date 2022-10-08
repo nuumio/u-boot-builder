@@ -1,0 +1,13 @@
+# This is for all rk3288 boards. Override in deeper configs.
+ATF_PLATFORM=rk3288
+ATF_CROSS_COMPILE=arm-linux-gnueabihf-
+UBOOT_CROSS_COMPILE=arm-linux-gnueabihf-
+UBOOT_BL=BL32
+
+# Bash glob to get u-boot binaries
+UBOOT_BIN_GLOB="[iu]*.{img,bin}"
+
+# Make commands for rk3288 boards
+ATF_MAKE='make "PLAT=${ATF_PLATFORM}" "CROSS_COMPILE=${ATF_CROSS_COMPILE}" ARCH=aarch32 AARCH32_SP=sp_min -j$(nproc)'
+UBOOT_MAKE_CONFIG='make "${UBOOT_BL}=${!UBOOT_BL}" "CROSS_COMPILE=${UBOOT_CROSS_COMPILE}" "${UBOOT_CONFIG}"'
+UBOOT_MAKE_BIN='make "${UBOOT_BL}=${!UBOOT_BL}" "CROSS_COMPILE=${UBOOT_CROSS_COMPILE}" all -j$(nproc)'
