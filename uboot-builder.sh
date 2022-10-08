@@ -309,7 +309,7 @@ if [ ! -z "${RELEASE_VERSION}" ]; then
   echo -e "\n**sha256sums:**\n\n\`\`\`" >> ${REL_NOTE}
   cd "${CUR_DIR}/${BUILD_DIR}"
   # Pack by platform name
-  for p in $(find "${BINARIES_DIR}" -mindepth 1 -maxdepth 1 -type d); do
+  for p in $(find "${BINARIES_DIR}" -mindepth 1 -maxdepth 1 -type d | sort); do
     PLATFORM="$(basename "${p}")"
     PKG="u-boot-${PLATFORM}-${RELEASE_VERSION}.tar.gz"
     tar czf "${PKG}" -C "${BINARIES_DIR}" "${PLATFORM}"
