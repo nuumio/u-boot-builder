@@ -92,10 +92,6 @@ patch-pkg() {
   done  
 }
 
-# Store nproc just to make "make debug" output cleaner.
-# (set -x trick would print "++nproc" line if using "make -j$(nproc)").
-NPROC="$(nproc)"
-
 # Build ATF and U-Boot (expects variables set before being called)
 build() {
   echo -e "\n========================================\n"
@@ -103,6 +99,7 @@ build() {
   echo "  ATF_VERSION: ${ATF_VERSION}"
   echo "  ATF_PLATFORM: ${ATF_PLATFORM}"
   echo "  ATF_CROSS_COMPILE: ${ATF_CROSS_COMPILE}"
+  echo "  ATF_MAKE: ${ATF_MAKE}"
   echo "  ATF_PATCHES:"
   for i in "${ATF_PATCHES[@]}"; do
     echo "    $i"
@@ -110,21 +107,39 @@ build() {
   echo "  UBOOT_VERSION: ${UBOOT_VERSION}"
   echo "  UBOOT_CONFIG: ${UBOOT_CONFIG}"
   echo "  UBOOT_CROSS_COMPILE: ${UBOOT_CROSS_COMPILE}"
+  echo "  UBOOT_BL: ${UBOOT_BL}"
+  echo "  UBOOT_BIN_GLOB: ${UBOOT_BIN_GLOB}"
+  echo "  UBOOT_MAKE_CONFIG: ${UBOOT_MAKE_CONFIG}"
+  echo "  UBOOT_MAKE_BIN: ${UBOOT_MAKE_BIN}"
   echo "  UBOOT_PATCHES:"
   for i in "${UBOOT_PATCHES[@]}"; do
     echo "    $i"
   done
   echo -e "\n========================================\n"
 
+  # Check UBOOT_BL
+  if [ "${UBOOT_BL}" != "BL31" ] && [ "${UBOOT_BL}" != "BL32" ]; then
+    echo "Unsupported UBOOT_BL: ${UBOOT_BL}"
+    return 1
+  fi
+
+  # Check UBOOT_BIN_GLOB
+  if [ -z "${UBOOT_BIN_GLOB}" ]; then
+    echo "Empty UBOOT_BIN_GLOB: Nothing to do!"
+    return 1
+  fi
+
   # Build ATF
   cd "${CUR_DIR}/${BUILD_DIR}"
   git-update ATF "${ATF_REPO}" "${ATF_VERSION}" "${ATF_DIR}" || return 1
   patch-pkg ATF "${ATF_PATCHES[@]}" || return 1
   echo "Building ATF ..."
-  (set -x; make "PLAT=${ATF_PLATFORM}" "CROSS_COMPILE=${ATF_CROSS_COMPILE}" -j${NPROC}) || return 1
+  echo "$(eval "echo + ${ATF_MAKE}")"
+  eval "${ATF_MAKE}" || return 1
   BL31="$(pwd)/build/${ATF_PLATFORM}/release/bl31/bl31.elf"
-  if [ ! -f "${BL31}" ]; then
-    echo "ATF ERROR, BL31 file not found: ${BL31}"
+  BL32="$(pwd)/build/${ATF_PLATFORM}/release/bl32/bl32.elf"
+  if [ ! -f "${!UBOOT_BL}" ]; then
+    echo "ATF ERROR, ${UBOOT_BL} file not found: ${!UBOOT_BL}"
     return 1
   fi
 
@@ -143,9 +158,11 @@ build() {
   fi
   patch-pkg U-Boot "${UBOOT_PATCHES[@]}" || return 1
   echo "Building U-Boot ..."
-  (set -x; make "BL31=${BL31}" "CROSS_COMPILE=${UBOOT_CROSS_COMPILE}" "${UBOOT_CONFIG}") || return 1
-  (set -x; make "BL31=${BL31}" "CROSS_COMPILE=${UBOOT_CROSS_COMPILE}" all -j${NPROC}) || return 1
-  cp [iu]*.{img,bin,itb} "${BIN_TARGET}/"
+  echo "$(eval "echo + ${UBOOT_MAKE_CONFIG}")"
+  eval "${UBOOT_MAKE_CONFIG}" || return 1
+  echo "$(eval "echo + ${UBOOT_MAKE_BIN}")"
+  eval "${UBOOT_MAKE_BIN}" || return 1
+  eval "cp ${UBOOT_BIN_GLOB} "${BIN_TARGET}/"" || return 1
 }
 
 # Prep build dir
@@ -184,9 +201,14 @@ for dplat in $(find board -mindepth 1 -maxdepth 1 -type d | sort); do
     unset ATF_VERSION
     unset ATF_PLATFORM
     unset ATF_CROSS_COMPILE
+    unset ATF_MAKE
     unset UBOOT_VERSION
     unset UBOOT_CONFIG
     unset UBOOT_CROSS_COMPILE
+    unset UBOOT_BL
+    unset UBOOT_BIN_GLOB
+    unset UBOOT_MAKE_CONFIG
+    unset UBOOT_MAKE_BIN
     unset PLAT_ATF_VERSION
     unset PLAT_UBOOT_VERSION
     unset PLAT_NOTE_EXTRA

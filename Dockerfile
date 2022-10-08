@@ -20,6 +20,7 @@ RUN set -ex \
         flex \
         gawk \
         gcc-aarch64-linux-gnu \
+        gcc-arm-linux-gnueabihf \
         gcc-arm-none-eabi \
         git \
         less \
