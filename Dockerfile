@@ -1,4 +1,4 @@
-FROM ubuntu:focal
+FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND 'noninteractive'
 ENV XZ_DEFAULTS '-T0'
@@ -19,6 +19,8 @@ RUN set -ex \
         dosfstools \
         flex \
         gawk \
+        gcc-10-aarch64-linux-gnu \
+        gcc-10-arm-linux-gnueabihf \
         gcc-aarch64-linux-gnu \
         gcc-arm-linux-gnueabihf \
         gcc-arm-none-eabi \
@@ -30,12 +32,12 @@ RUN set -ex \
         locales \
         mtools \
         nano \
-        python \
+        python2 \
         python3 \
         python3-dev \
         python3-distutils \
         python3-setuptools \
-        python-pyelftools \
+        python3-pyelftools \
         rename \
         sed \
         swig \
