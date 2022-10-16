@@ -3,14 +3,20 @@ on: [pull_request]
 jobs:
   build:
     name: Build U-Boot
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install toolchains
         run: |
           sudo apt update
-          sudo apt install gcc-aarch64-linux-gnu device-tree-compiler gcc-arm-linux-gnueabihf gcc-arm-none-eabi
+          sudo apt install \
+            device-tree-compiler \
+            gcc-10-aarch64-linux-gnu \
+            gcc-10-arm-linux-gnueabihf \
+            gcc-aarch64-linux-gnu \
+            gcc-arm-linux-gnueabihf \
+            gcc-arm-none-eabi
       - name: Build
         # "shell: bash" implies "-o pipefail" -> pipelines fail if any part fails
         # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsshell
@@ -18,8 +24,14 @@ jobs:
         run: |
           # Store all output so we can publish build log too for
           # later inspection if needed. It's good for transparency too.
+          # Also, dump gcc versions to log too.
           mkdir -p build
-          ./uboot-builder.sh 2>&1 | tee build/build.log
+          (for cc in $(find /usr/bin/ -regextype posix-extended  -regex ".*gcc(-[0-9\.]+)?" | sort); \
+            do echo -e "$ ${cc}\n$($cc --version)\n"; \
+            done \
+          ) | tee build/build.log
+          mkdir -p build
+          ./uboot-builder.sh 2>&1 | tee -a build/build.log
       - name: Archive artifacts
         # Archive what ever we have even after failed build
         if: ${{ always() }}

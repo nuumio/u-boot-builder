@@ -6,14 +6,20 @@ on:
 jobs:
   build:
     name: Build U-Boot
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install toolchains
         run: |
           sudo apt update
-          sudo apt install gcc-aarch64-linux-gnu device-tree-compiler gcc-arm-linux-gnueabihf gcc-arm-none-eabi
+          sudo apt install \
+            device-tree-compiler \
+            gcc-10-aarch64-linux-gnu \
+            gcc-10-arm-linux-gnueabihf \
+            gcc-aarch64-linux-gnu \
+            gcc-arm-linux-gnueabihf \
+            gcc-arm-none-eabi
       - name: Build
         env:
           RELEASE_VERSION: ${{ github.ref_name }}
@@ -23,8 +29,13 @@ jobs:
         run: |
           # Store all output so we can publish build log too for
           # later inspection if needed. It's good for transparency too.
+          # Also, dump gcc versions to log too.
           mkdir -p build
-          ./uboot-builder.sh 2>&1 | tee build/build.log
+          (for cc in $(find /usr/bin/ -regextype posix-extended  -regex ".*gcc(-[0-9\.]+)?" | sort); \
+            do echo -e "$ ${cc}\n$($cc --version)\n"; \
+            done \
+          ) | tee build/build.log
+          ./uboot-builder.sh 2>&1 | tee -a build/build.log
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
