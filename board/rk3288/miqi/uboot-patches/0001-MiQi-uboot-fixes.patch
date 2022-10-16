@@ -1,0 +1,47 @@
+From 98664da52248aad2bb39177f8b5d5d4286f8e88f Mon Sep 17 00:00:00 2001
+From: Demetris Ierokipides <ierokipides.dem@gmail.com>
+Date: Mon, 10 Oct 2022 23:15:12 +0300
+Subject: [PATCH] MiQi uboot fixes
+
+---
+ arch/arm/dts/rk3288-miqi-u-boot.dtsi | 5 +++++
+ include/configs/miqi_rk3288.h        | 9 +++++++++
+ 2 files changed, 14 insertions(+)
+
+diff --git a/arch/arm/dts/rk3288-miqi-u-boot.dtsi b/arch/arm/dts/rk3288-miqi-u-boot.dtsi
+index 2a74fdd15f..e04ab12cac 100644
+--- a/arch/arm/dts/rk3288-miqi-u-boot.dtsi
++++ b/arch/arm/dts/rk3288-miqi-u-boot.dtsi
+@@ -5,6 +5,11 @@
+ 
+ #include "rk3288-u-boot.dtsi"
+ / {
++	chosen {
++		u-boot,spl-boot-order = \
++			"same-as-spl", &sdmmc, &emmc;
++	};
++
+ 	leds {
+ 		u-boot,dm-pre-reloc;
+ 
+diff --git a/include/configs/miqi_rk3288.h b/include/configs/miqi_rk3288.h
+index 053c9032e2..269ec529a3 100644
+--- a/include/configs/miqi_rk3288.h
++++ b/include/configs/miqi_rk3288.h
+@@ -13,4 +13,13 @@
+ 
+ #include <configs/rk3288_common.h>
+ 
++#undef BOOT_TARGET_DEVICES
++
++#define BOOT_TARGET_DEVICES(func) \
++	func(MMC, mmc, 0) \
++	func(MMC, mmc, 1) \
++	func(USB, usb, 0) \
++	func(PXE, pxe, na) \
++	func(DHCP, dchp, na)
++
+ #endif
+-- 
+2.34.1
+

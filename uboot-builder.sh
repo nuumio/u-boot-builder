@@ -111,6 +111,9 @@ build() {
   echo "  UBOOT_BIN_GLOB: ${UBOOT_BIN_GLOB}"
   echo "  UBOOT_MAKE_CONFIG: ${UBOOT_MAKE_CONFIG}"
   echo "  UBOOT_MAKE_BIN: ${UBOOT_MAKE_BIN}"
+  if [ ! -z "${UBOOT_MKIMAGE}" ]; then
+    echo "  UBOOT_MKIMAGE: ${UBOOT_MKIMAGE}"
+  fi
   echo "  UBOOT_PATCHES:"
   for i in "${UBOOT_PATCHES[@]}"; do
     echo "    $i"
@@ -162,6 +165,10 @@ build() {
   eval "${UBOOT_MAKE_CONFIG}" || return 1
   echo "$(eval "echo + ${UBOOT_MAKE_BIN}")"
   eval "${UBOOT_MAKE_BIN}" || return 1
+  if [ ! -z "${UBOOT_MKIMAGE}" ]; then
+    echo "$(eval "echo + ${UBOOT_MKIMAGE}")"
+    eval "${UBOOT_MKIMAGE}" || return 1
+  fi
   eval "cp ${UBOOT_BIN_GLOB} "${BIN_TARGET}/"" || return 1
 }
 
@@ -209,6 +216,7 @@ for dplat in $(find board -mindepth 1 -maxdepth 1 -type d | sort); do
     unset UBOOT_BIN_GLOB
     unset UBOOT_MAKE_CONFIG
     unset UBOOT_MAKE_BIN
+    unset UBOOT_MKIMAGE
     unset PLAT_ATF_VERSION
     unset PLAT_UBOOT_VERSION
     unset PLAT_NOTE_EXTRA
