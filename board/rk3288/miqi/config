@@ -1,2 +1,1 @@
 UBOOT_CONFIG=miqi-rk3288_defconfig
-UBOOT_MKIMAGE='./tools/mkimage -n rk3288 -T rksd -d spl/u-boot-spl-dtb.bin u-boot-with-spl.img && cat u-boot-dtb.bin >> u-boot-with-spl.img'
