@@ -1,55 +1,60 @@
 diff --git a/configs/firefly-rk3288_defconfig b/configs/firefly-rk3288_defconfig
-index 1349d6464d..45ac04463b 100644
+index 1349d6464d..92a908b141 100644
 --- a/configs/firefly-rk3288_defconfig
 +++ b/configs/firefly-rk3288_defconfig
-@@ -95,3 +95,6 @@ CONFIG_DISPLAY_ROCKCHIP_HDMI=y
+@@ -95,3 +95,7 @@ CONFIG_DISPLAY_ROCKCHIP_HDMI=y
  CONFIG_CONSOLE_SCROLL_LINES=10
  CONFIG_CMD_DHRYSTONE=y
  CONFIG_ERRNO_STR=y
-+# Faster boot w/o usb.
++# Faster boot with 1 s delay and w/o usb.
 +# (Default is CONFIG_PREBOOT="usb start" when CONFIG_USB_KEYBOARD=y)
++CONFIG_BOOTDELAY=1
 +CONFIG_PREBOOT=""
 diff --git a/configs/miqi-rk3288_defconfig b/configs/miqi-rk3288_defconfig
-index 75675e6095..9fd324acb4 100644
+index 75675e6095..869d7f17ca 100644
 --- a/configs/miqi-rk3288_defconfig
 +++ b/configs/miqi-rk3288_defconfig
-@@ -92,3 +92,6 @@ CONFIG_DISPLAY_ROCKCHIP_HDMI=y
+@@ -92,3 +92,7 @@ CONFIG_DISPLAY_ROCKCHIP_HDMI=y
  CONFIG_CONSOLE_SCROLL_LINES=10
  CONFIG_CMD_DHRYSTONE=y
  CONFIG_ERRNO_STR=y
-+# Faster boot w/o usb.
++# Faster boot with 1 s delay and w/o usb.
 +# (Default is CONFIG_PREBOOT="usb start" when CONFIG_USB_KEYBOARD=y)
++CONFIG_BOOTDELAY=1
 +CONFIG_PREBOOT=""
 diff --git a/configs/rock-pi-n8-rk3288_defconfig b/configs/rock-pi-n8-rk3288_defconfig
-index 6227ad39c1..51fc676330 100644
+index 6227ad39c1..4ca84ae2c2 100644
 --- a/configs/rock-pi-n8-rk3288_defconfig
 +++ b/configs/rock-pi-n8-rk3288_defconfig
-@@ -88,3 +88,6 @@ CONFIG_DISPLAY=y
+@@ -88,3 +88,7 @@ CONFIG_DISPLAY=y
  CONFIG_VIDEO_ROCKCHIP=y
  CONFIG_DISPLAY_ROCKCHIP_HDMI=y
  CONFIG_ERRNO_STR=y
-+# Faster boot w/o usb.
++# Faster boot with 1 s delay and w/o usb.
 +# (Default is CONFIG_PREBOOT="usb start" when CONFIG_USB_KEYBOARD=y)
++CONFIG_BOOTDELAY=1
 +CONFIG_PREBOOT=""
 diff --git a/configs/tinker-s-rk3288_defconfig b/configs/tinker-s-rk3288_defconfig
-index 28ae79bc01..b543023ad2 100644
+index 28ae79bc01..220006f9ad 100644
 --- a/configs/tinker-s-rk3288_defconfig
 +++ b/configs/tinker-s-rk3288_defconfig
-@@ -100,3 +100,6 @@ CONFIG_DISPLAY_ROCKCHIP_HDMI=y
+@@ -100,3 +100,7 @@ CONFIG_DISPLAY_ROCKCHIP_HDMI=y
  CONFIG_CONSOLE_SCROLL_LINES=10
  CONFIG_CMD_DHRYSTONE=y
  CONFIG_ERRNO_STR=y
-+# Faster boot w/o usb.
++# Faster boot with 1 s delay and w/o usb.
 +# (Default is CONFIG_PREBOOT="usb start" when CONFIG_USB_KEYBOARD=y)
++CONFIG_BOOTDELAY=1
 +CONFIG_PREBOOT=""
 diff --git a/configs/vyasa-rk3288_defconfig b/configs/vyasa-rk3288_defconfig
-index 4b5b1db0ff..9e064b2c64 100644
+index 4b5b1db0ff..46a10ecb52 100644
 --- a/configs/vyasa-rk3288_defconfig
 +++ b/configs/vyasa-rk3288_defconfig
-@@ -101,3 +101,6 @@ CONFIG_DISPLAY_ROCKCHIP_HDMI=y
+@@ -101,3 +101,7 @@ CONFIG_DISPLAY_ROCKCHIP_HDMI=y
  CONFIG_CONSOLE_SCROLL_LINES=10
  CONFIG_CMD_DHRYSTONE=y
  CONFIG_ERRNO_STR=y
-+# Faster boot w/o usb.
++# Faster boot with 1 s delay and w/o usb.
 +# (Default is CONFIG_PREBOOT="usb start" when CONFIG_USB_KEYBOARD=y)
++CONFIG_BOOTDELAY=1
 +CONFIG_PREBOOT=""
