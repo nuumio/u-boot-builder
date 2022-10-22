@@ -1,0 +1,48 @@
+diff --git a/configs/rock-pi-4-rk3399_defconfig b/configs/rock-pi-4-rk3399_defconfig
+index 19cf555d12..5ca9b8401d 100644
+--- a/configs/rock-pi-4-rk3399_defconfig
++++ b/configs/rock-pi-4-rk3399_defconfig
+@@ -81,7 +81,6 @@ CONFIG_USB_GADGET=y
+ CONFIG_DM_VIDEO=y
+ CONFIG_DISPLAY=y
+ CONFIG_VIDEO_ROCKCHIP=y
+-CONFIG_DISPLAY_ROCKCHIP_HDMI=y
+ CONFIG_SPL_TINY_MEMSET=y
+ CONFIG_ERRNO_STR=y
+ # Faster boot w/o delay and usb.
+diff --git a/configs/rock-pi-4c-rk3399_defconfig b/configs/rock-pi-4c-rk3399_defconfig
+index ecd42154dd..75af373211 100644
+--- a/configs/rock-pi-4c-rk3399_defconfig
++++ b/configs/rock-pi-4c-rk3399_defconfig
+@@ -81,7 +81,6 @@ CONFIG_USB_GADGET=y
+ CONFIG_DM_VIDEO=y
+ CONFIG_DISPLAY=y
+ CONFIG_VIDEO_ROCKCHIP=y
+-CONFIG_DISPLAY_ROCKCHIP_HDMI=y
+ CONFIG_SPL_TINY_MEMSET=y
+ CONFIG_ERRNO_STR=y
+ # Faster boot w/o delay and usb.
+diff --git a/configs/rock960-rk3399_defconfig b/configs/rock960-rk3399_defconfig
+index 66c189e55d..c4f70c33e0 100644
+--- a/configs/rock960-rk3399_defconfig
++++ b/configs/rock960-rk3399_defconfig
+@@ -85,7 +85,6 @@ CONFIG_USB_ETHER_SMSC95XX=y
+ CONFIG_DM_VIDEO=y
+ CONFIG_DISPLAY=y
+ CONFIG_VIDEO_ROCKCHIP=y
+-CONFIG_DISPLAY_ROCKCHIP_HDMI=y
+ CONFIG_SPL_TINY_MEMSET=y
+ CONFIG_ERRNO_STR=y
+ # Faster boot w/o delay and usb.
+diff --git a/configs/rockpro64-rk3399_defconfig b/configs/rockpro64-rk3399_defconfig
+index 6d415f56cc..edd60947f8 100644
+--- a/configs/rockpro64-rk3399_defconfig
++++ b/configs/rockpro64-rk3399_defconfig
+@@ -101,7 +101,6 @@ CONFIG_USB_ETHER_SMSC95XX=y
+ CONFIG_DM_VIDEO=y
+ CONFIG_DISPLAY=y
+ CONFIG_VIDEO_ROCKCHIP=y
+-CONFIG_DISPLAY_ROCKCHIP_HDMI=y
+ CONFIG_SPL_TINY_MEMSET=y
+ CONFIG_ERRNO_STR=y
+ # Faster boot w/o delay and usb.
