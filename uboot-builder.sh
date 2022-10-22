@@ -163,6 +163,8 @@ build() {
   echo "Building U-Boot ..."
   echo "$(eval "echo + ${UBOOT_MAKE_CONFIG}")"
   eval "${UBOOT_MAKE_CONFIG}" || return 1
+  # Copy .config too to make it easier to inspect in retrospect
+  cp .config "${BIN_TARGET}/"
   echo "$(eval "echo + ${UBOOT_MAKE_BIN}")"
   eval "${UBOOT_MAKE_BIN}" || return 1
   if [ ! -z "${UBOOT_MKIMAGE}" ]; then
