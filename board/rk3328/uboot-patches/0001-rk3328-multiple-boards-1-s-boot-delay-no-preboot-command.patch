@@ -1,0 +1,41 @@
+diff --git a/configs/nanopi-r2s-rk3328_defconfig b/configs/nanopi-r2s-rk3328_defconfig
+index 86f5e111f8..511f03270f 100644
+--- a/configs/nanopi-r2s-rk3328_defconfig
++++ b/configs/nanopi-r2s-rk3328_defconfig
+@@ -110,3 +110,5 @@ CONFIG_USB_GADGET_DWC2_OTG=y
+ CONFIG_SPL_TINY_MEMSET=y
+ CONFIG_TPL_TINY_MEMSET=y
+ CONFIG_ERRNO_STR=y
++# Faster boot with 1 s delay.
++CONFIG_BOOTDELAY=1
+diff --git a/configs/roc-cc-rk3328_defconfig b/configs/roc-cc-rk3328_defconfig
+index 8ba50345da..df74361794 100644
+--- a/configs/roc-cc-rk3328_defconfig
++++ b/configs/roc-cc-rk3328_defconfig
+@@ -115,3 +115,5 @@ CONFIG_USB_GADGET_DWC2_OTG=y
+ CONFIG_SPL_TINY_MEMSET=y
+ CONFIG_TPL_TINY_MEMSET=y
+ CONFIG_ERRNO_STR=y
++# Faster boot with 1 s delay.
++CONFIG_BOOTDELAY=1
+diff --git a/configs/rock-pi-e-rk3328_defconfig b/configs/rock-pi-e-rk3328_defconfig
+index fb5eac3c1f..89cfeaff0c 100644
+--- a/configs/rock-pi-e-rk3328_defconfig
++++ b/configs/rock-pi-e-rk3328_defconfig
+@@ -116,3 +116,5 @@ CONFIG_USB_GADGET_DWC2_OTG=y
+ CONFIG_SPL_TINY_MEMSET=y
+ CONFIG_TPL_TINY_MEMSET=y
+ CONFIG_ERRNO_STR=y
++# Faster boot with 1 s delay.
++CONFIG_BOOTDELAY=1
+diff --git a/configs/rock64-rk3328_defconfig b/configs/rock64-rk3328_defconfig
+index b055dd0979..1c17fe9606 100644
+--- a/configs/rock64-rk3328_defconfig
++++ b/configs/rock64-rk3328_defconfig
+@@ -113,3 +113,6 @@ CONFIG_USB_GADGET_DWC2_OTG=y
+ CONFIG_SPL_TINY_MEMSET=y
+ CONFIG_TPL_TINY_MEMSET=y
+ CONFIG_ERRNO_STR=y
++# Faster boot with 1 s delay.
++CONFIG_BOOTDELAY=1
++
