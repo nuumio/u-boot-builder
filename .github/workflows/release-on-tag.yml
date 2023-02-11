@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Install toolchains
+      - name: Install toolchains and deps
         run: |
           sudo apt update
           sudo apt install \
@@ -19,7 +19,9 @@ jobs:
             gcc-10-arm-linux-gnueabihf \
             gcc-aarch64-linux-gnu \
             gcc-arm-linux-gnueabihf \
-            gcc-arm-none-eabi
+            gcc-arm-none-eabi \
+            gnutls-dev \
+            uuid-dev
       - name: Build
         env:
           RELEASE_VERSION: ${{ github.ref_name }}
