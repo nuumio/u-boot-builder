@@ -1,48 +1,48 @@
 diff --git a/configs/rock-pi-4-rk3399_defconfig b/configs/rock-pi-4-rk3399_defconfig
-index 19cf555d12..5ca9b8401d 100644
+index e44cec69bd..6d9b39eb9a 100644
 --- a/configs/rock-pi-4-rk3399_defconfig
 +++ b/configs/rock-pi-4-rk3399_defconfig
-@@ -81,7 +81,6 @@ CONFIG_USB_GADGET=y
- CONFIG_DM_VIDEO=y
+@@ -88,7 +88,6 @@ CONFIG_USB_FUNCTION_ROCKUSB=y
+ CONFIG_VIDEO=y
  CONFIG_DISPLAY=y
  CONFIG_VIDEO_ROCKCHIP=y
 -CONFIG_DISPLAY_ROCKCHIP_HDMI=y
  CONFIG_SPL_TINY_MEMSET=y
  CONFIG_ERRNO_STR=y
- # Faster boot w/o delay and usb.
+ CONFIG_OF_LIBFDT_OVERLAY=y
 diff --git a/configs/rock-pi-4c-rk3399_defconfig b/configs/rock-pi-4c-rk3399_defconfig
-index ecd42154dd..75af373211 100644
+index 74b73f532e..7482da659d 100644
 --- a/configs/rock-pi-4c-rk3399_defconfig
 +++ b/configs/rock-pi-4c-rk3399_defconfig
-@@ -81,7 +81,6 @@ CONFIG_USB_GADGET=y
- CONFIG_DM_VIDEO=y
+@@ -88,7 +88,6 @@ CONFIG_USB_FUNCTION_ROCKUSB=y
+ CONFIG_VIDEO=y
  CONFIG_DISPLAY=y
  CONFIG_VIDEO_ROCKCHIP=y
 -CONFIG_DISPLAY_ROCKCHIP_HDMI=y
  CONFIG_SPL_TINY_MEMSET=y
  CONFIG_ERRNO_STR=y
- # Faster boot w/o delay and usb.
+ CONFIG_OF_LIBFDT_OVERLAY=y
 diff --git a/configs/rock960-rk3399_defconfig b/configs/rock960-rk3399_defconfig
-index 66c189e55d..c4f70c33e0 100644
+index 384f304f30..eed143fcf9 100644
 --- a/configs/rock960-rk3399_defconfig
 +++ b/configs/rock960-rk3399_defconfig
-@@ -85,7 +85,6 @@ CONFIG_USB_ETHER_SMSC95XX=y
- CONFIG_DM_VIDEO=y
+@@ -84,7 +84,6 @@ CONFIG_USB_ETHER_SMSC95XX=y
+ CONFIG_VIDEO=y
  CONFIG_DISPLAY=y
  CONFIG_VIDEO_ROCKCHIP=y
 -CONFIG_DISPLAY_ROCKCHIP_HDMI=y
  CONFIG_SPL_TINY_MEMSET=y
  CONFIG_ERRNO_STR=y
- # Faster boot w/o delay and usb.
+ # Faster boot with 1 s delay and w/o usb.
 diff --git a/configs/rockpro64-rk3399_defconfig b/configs/rockpro64-rk3399_defconfig
-index 6d415f56cc..edd60947f8 100644
+index 4840ea7b15..bb06330c13 100644
 --- a/configs/rockpro64-rk3399_defconfig
 +++ b/configs/rockpro64-rk3399_defconfig
-@@ -101,7 +101,6 @@ CONFIG_USB_ETHER_SMSC95XX=y
- CONFIG_DM_VIDEO=y
+@@ -100,7 +100,6 @@ CONFIG_USB_ETHER_SMSC95XX=y
+ CONFIG_VIDEO=y
  CONFIG_DISPLAY=y
  CONFIG_VIDEO_ROCKCHIP=y
 -CONFIG_DISPLAY_ROCKCHIP_HDMI=y
  CONFIG_SPL_TINY_MEMSET=y
  CONFIG_ERRNO_STR=y
- # Faster boot w/o delay and usb.
+ # Faster boot with 1 s delay and w/o usb.
