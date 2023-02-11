@@ -25,6 +25,7 @@ RUN set -ex \
         gcc-arm-linux-gnueabihf \
         gcc-arm-none-eabi \
         git \
+        gnutls-dev \
         less \
         libncurses5 \
         libncurses5-dev \
@@ -42,6 +43,7 @@ RUN set -ex \
         sed \
         swig \
         tar \
+        uuid-dev \
     && locale-gen en_US.utf8
 
 # Clean up apt
